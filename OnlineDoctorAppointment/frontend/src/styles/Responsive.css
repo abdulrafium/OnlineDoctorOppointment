@@ -1,0 +1,61 @@
+@media (max-width: 768px) {
+  .app-container {
+    flex-direction: column !important;
+    padding: 1rem !important;
+    height: auto !important;
+    gap: 20px !important;
+    justify-content: center !important;
+    align-items: stretch !important;
+  }
+
+  .routes-wrapper,
+  .role-selection-container,
+  .registration-container,
+  .patient-login-container,
+  .login-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 20px !important;
+    margin: 0 auto !important;
+    box-sizing: border-box !important;
+  }
+
+  .role-button,
+  .registration-button,
+  .patient-login-button,
+  .login-button {
+    width: 100% !important;
+    font-size: 16px !important;
+    padding: 12px !important;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  .registration-input,
+  .patient-login-input,
+  .login-input {
+    width: 100% !important;
+  }
+
+  .popup {
+    width: 80% !important;
+    top: 10px !important;
+    right: 5% !important;
+    font-size: 14px !important;
+    padding: 12px !important;
+    min-width: unset !important;
+  }
+
+  img {
+    width: 100% !important;
+    height: auto !important;
+  }
+
+  .back-link,
+  .registration-back-link,
+  .patient-login-link {
+    font-size: 14px !important;
+    margin-top: 10px !important;
+  }
+}

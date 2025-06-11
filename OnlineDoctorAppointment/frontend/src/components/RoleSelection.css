@@ -1,0 +1,57 @@
+.role-selection {
+  text-align: center;
+}
+
+.role-selection h2 {
+  margin-bottom: 20px;
+}
+
+.role-selection button {
+  margin: 10px;
+  padding: 10px 20px;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+/* RoleSelection.css */
+
+.role-selection-container {
+  padding: 40px;
+  max-width: 400px;
+  text-align: center;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+}
+
+.role-selection-title {
+  margin-bottom: 30px;
+  color: #5fcfd0;
+}
+
+.role-button {
+  display: inline-block;
+  padding: 12px 32px;
+  background: #4fadad;
+  color: #fff;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 18px;
+  transition: background 0.2s;
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.08);
+}
+
+.role-button:hover {
+  background: #3c9d9d;
+  color: #fff;
+  text-decoration: none;
+}
+
+.role-button:visited {
+  color: #fff;
+}
+
+.role-selection-footer {
+  color: #6c757d;
+}

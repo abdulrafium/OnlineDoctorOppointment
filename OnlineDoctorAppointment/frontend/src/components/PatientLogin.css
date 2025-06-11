@@ -1,4 +1,4 @@
-.login-container {
+.patient-login-container {
   padding: 50px;
   margin: auto;
   max-width: 400px;
@@ -8,11 +8,11 @@
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
 }
 
-.login-title {
+.patient-login-title {
   color: #5fcfd0;
 }
 
-.login-input {
+.patient-login-input {
   width: 90%;
   padding: 10px;
   border-radius: 6px;
@@ -21,7 +21,7 @@
   margin-bottom: 15px;
 }
 
-.login-button {
+.patient-login-button {
   padding: 10px 20px;
   border-radius: 6px;
   border: none;
@@ -30,16 +30,22 @@
   font-size: 16px;
   cursor: pointer;
   margin: 5px;
+  transition: background 0.3s ease;
 }
 
-.login-message {
+.patient-login-button:hover {
+  background: #3d9797;
+}
+
+.patient-login-message {
   color: #dc3545;
 }
 
-.back-link {
+.patient-login-link {
   display: block;
   margin-top: 20px;
   color: #5fcfd0;
   text-decoration: none;
 }
+
 
