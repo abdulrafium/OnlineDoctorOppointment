@@ -1,6 +1,9 @@
+/* App.css */
 
-.app-container {
+/* Layout for login/registration pages on large screens */
+.auth-layout {
   display: flex;
+  flex-direction: row;
   justify-content: space-between;
   align-items: center;
   height: 100vh;
@@ -15,4 +18,10 @@
   width: 400px;
 }
 
-
+/* Dashboard layout (unchanged) */
+.main-layout {
+  width: 100%;
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding: 2rem;
+}
