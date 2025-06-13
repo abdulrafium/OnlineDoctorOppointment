@@ -1,25 +1,28 @@
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
+const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-// const nodemailer = require("nodemailer"); // optional email
+
+const User = require("./models/Users");
 
 dotenv.config();
 const app = express();
+
 app.use(cors());
 app.use(express.json());
 
-let users = []; // In-memory user storage
+mongoose.connect(process.env.MONGO_URI)
 
-// Helper: email format
+  .then(() => console.log("✅ MongoDB Connected"))
+  .catch(err => console.error("❌ MongoDB connection error:", err));
+
 const isValidEmail = email => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-// === Register ===
 app.post("/api/register", async (req, res) => {
   const { firstName, lastName, username, email, password, role } = req.body;
 
-  // 1. Validate fields
   if (!firstName || !lastName || !username || !email || !password || !role) {
     return res.status(400).json({ msg: "All fields are required" });
   }
@@ -28,49 +31,63 @@ app.post("/api/register", async (req, res) => {
     return res.status(400).json({ msg: "Invalid email format" });
   }
 
-  // 2. Check for duplicates
-  const existingUser = users.find(u => u.email === email || u.username === username);
-  if (existingUser) return res.status(400).json({ msg: "Email or Username already exists" });
+  try {
+    const existingUser = await User.findOne({ $or: [{ email }, { username }] });
 
-  // 3. Hash password
-  const hashedPassword = await bcrypt.hash(password, 10);
+    if (existingUser) {
+      return res.status(400).json({ msg: "Email or Username already exists" });
+    }
 
-  // 4. Store user
-  const newUser = { firstName, lastName, username, email, password: hashedPassword, role };
-  users.push(newUser);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-  //Send welcome email
-  // const transporter = nodemailer.createTransport({
-  //   service: "gmail",
-  //   auth: {
-  //     user: process.env.EMAIL,
-  //     pass: process.env.EMAIL_PASS,
-  //   },
-  // });
-  // await transporter.sendMail({
-  //   from: process.env.EMAIL,
-  //   to: email,
-  //   subject: "Welcome to Our System",
-  //   text: `Hi ${firstName}, you have successfully registered as a ${role}.`,
-  // });
+    const newUser = new User({
+      firstName,
+      lastName,
+      username,
+      email,
+      password: hashedPassword,
+      role,
+    });
 
-  res.json({ msg: "Registered successfully" });
+    await newUser.save();
+    res.json({ msg: "Registered successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: "Server error" });
+  }
 });
 
-// === Login ===
+
+// const bcrypt = require('bcrypt'); // Add this at the top if not already
+// const User = require('./models/User'); // ✅ make sure path is correct
+
+
+
 app.post("/api/login", async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, role } = req.body;
 
-  const user = users.find(user => user.email === email);
-  if (!user) return res.status(400).json({ msg: "Invalid email or password" });
+  try {
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ msg: "User not found" });
 
-  const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) return res.status(400).json({ msg: "Invalid email or password" });
+    const isPasswordMatch = await bcrypt.compare(password, user.password);
+    if (!isPasswordMatch) return res.status(401).json({ msg: "Invalid password" });
 
-  const token = jwt.sign({ email, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1h" });
+    // Role check
+    if (user.role !== role) {
+      return res.status(403).json({ msg: `Access denied: This is a ${user.role} account` });
+    }
 
-  res.json({ msg: "Login successful", token });
+    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+    res.status(200).json({ msg: "Login successful", token, role: user.role });
+  } catch (err) {
+    res.status(500).json({ msg: "Server error", error: err.message });
+  }
 });
 
-const PORT = 5000;
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+
+
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
