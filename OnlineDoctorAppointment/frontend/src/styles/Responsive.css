@@ -59,4 +59,62 @@
     font-size: 14px !important;
     margin-top: 10px !important;
   }
+
+  /* 👇 NEW: PatientDashboard responsive styles */
+  .dashboard-container {
+    flex-direction: column !important;
+  }
+
+  .sidebar {
+    width: 100% !important;
+    box-shadow: none !important;
+    padding: 20px !important;
+    align-items: flex-start !important;
+  }
+
+  .nav-links li {
+    font-size: 14px !important;
+    padding: 10px !important;
+  }
+
+  .main-content {
+    padding: 20px !important;
+  }
+
+  /* 👇 NEW: PatientProfile responsive styles */
+  .patient-profile-container {
+    padding: 20px !important;
+    margin: 20px auto !important;
+    box-shadow: none !important;
+  }
+
+  .form-row {
+    flex-direction: column !important;
+    gap: 15px !important;
+  }
+
+  .form-input {
+    width: 100% !important;
+  }
+
+  .patient-profile-button {
+    width: 100% !important;
+    font-size: 14px !important;
+  }
+
+  /* 👇 NEW: ChangePassword responsive styles */
+  .change-password-container {
+    padding: 20px !important;
+    margin: 30px auto !important;
+    box-shadow: none !important;
+  }
+
+  .change-password-container input {
+    width: 100% !important;
+  }
+
+  .change-password-container button {
+    width: 100% !important;
+    font-size: 14px !important;
+  }
 }
