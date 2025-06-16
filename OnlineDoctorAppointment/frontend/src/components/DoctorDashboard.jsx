@@ -11,7 +11,28 @@ const DoctorDashboard = () => {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false); // 🟡 Added for spinner
 
-  //Backend API call to fetch user data
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const token = localStorage.getItem("token");
+      try {
+        const res = await fetch("http://localhost:5000/api/get-user", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          setUser(data.user);
+        } else {
+          navigate("/doctor");
+        }
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      }
+    };
+
+    fetchUserData();
+  }, [navigate]);
 
   const handleLogout = () => {
     setLoggingOut(true);

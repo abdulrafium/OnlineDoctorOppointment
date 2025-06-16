@@ -38,7 +38,36 @@ const ChangePassword = () => {
 
     setLoading(true); // 🟡 Start loading
 
-    //Backend API call to change password
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch("http://localhost:5000/api/change-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token, ...formData })
+      });
+
+      const data = await res.json();
+      setType(data.success ? 'success' : 'error');
+      setMessage(data.message);
+      setShowPopup(true);
+
+      if (data.success) {
+        setFormData({
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: ''
+        });
+      }
+
+    } catch (err) {
+      console.error(err);
+      setType('error');
+      setMessage('Server error while changing password.');
+      setShowPopup(true);
+    } finally {
+      setLoading(false); // 🔴 Stop loading
+    }
+  };
 
   useEffect(() => {
     if (showPopup) {

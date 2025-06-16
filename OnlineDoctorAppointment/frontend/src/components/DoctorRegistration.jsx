@@ -28,7 +28,50 @@ export function DoctorRegistration({ role }) {
     }, 3000);
   };
 
-  //Backend Doctor Regitration
+  const handleRegister = async (e) => {
+    e.preventDefault();
+
+    if (!firstName || !lastName || !email || !password || !confirmPassword) {
+      return showPopup({ message: "Please fill in all required fields.", type: "error" });
+    }
+
+    const emailRegex = /^[^\s@]+@(gmail\.com|yahoo\.com|outlook\.com|hotmail\.com)$/i;
+    if (!emailRegex.test(email)) {
+      return showPopup({ message: "Email must be a valid domain like @gmail.com", type: "error" });
+    }
+
+    if (password !== confirmPassword) {
+      return showPopup({ message: "Passwords do not match.", type: "error" });
+    }
+
+    setLoading(true); // 🟡 Start spinner
+
+    try {
+      const res = await fetch("http://localhost:5000/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ firstName, lastName, username, email, password, role })
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        showPopup({ message: data.msg, type: "success" });
+        setFirstName('');
+        setLastName('');
+        setUsername('');
+        setEmail('');
+        setPassword('');
+        setConfirmPassword('');
+      } else {
+        showPopup({ message: data.msg, type: "error" });
+      }
+    } catch (err) {
+      showPopup({ message: "Registration failed.", type: "error" });
+    } finally {
+      setLoading(false); // 🔴 Stop spinner
+    }
+  };
 
   return (
     <div className="registration-container">
