@@ -29,20 +29,31 @@ export function Registration({ role }) {
   };
 
   const handleRegister = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (!firstName || !lastName || !email || !password || !confirmPassword) {
-      return showPopup({ message: "Please fill in all required fields.", type: "error" });
-    }
+  if (!firstName || !lastName || !email || !password || !confirmPassword) {
+    return showPopup({ message: "Please fill in all required fields.", type: "error" });
+  }
 
-    const emailRegex = /^[^\s@]+@(gmail\.com|yahoo\.com|outlook\.com|hotmail\.com)$/i;
-    if (!emailRegex.test(email)) {
-      return showPopup({ message: "Email must be a valid domain like @gmail.com", type: "error" });
-    }
+  const emailRegex = /^[^\s@]+@(gmail\.com|yahoo\.com|outlook\.com|hotmail\.com)$/i;
+  if (!emailRegex.test(email)) {
+    return showPopup({ message: "Email must be a valid domain like @gmail.com", type: "error" });
+  }
 
-    if (password !== confirmPassword) {
-      return showPopup({ message: "Passwords do not match.", type: "error" });
-    }
+  const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+  if (!passwordRegex.test(password)) {
+    return showPopup({
+      message: "Password must be 8+ chars with uppercase, number & special symbol.",
+      type: "error"
+    });
+  }
+
+  if (password !== confirmPassword) {
+    return showPopup({ message: "Passwords do not match.", type: "error" });
+  }
+
+  // continue with fetch logic...
+
 
     setLoading(true); // 🟡 Start spinner
 

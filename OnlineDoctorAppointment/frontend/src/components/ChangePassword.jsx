@@ -22,6 +22,15 @@ const ChangePassword = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+
+    if (!passwordRegex.test(formData.newPassword)) {
+      setType('error');
+      setMessage('Password must be 8+ chars with uppercase, number & special symbol.');
+      setShowPopup(true);
+      return;
+    }
+
     if (formData.newPassword !== formData.confirmPassword) {
       setType('error');
       setMessage('New and confirm password do not match');
@@ -35,6 +44,7 @@ const ChangePassword = () => {
       setShowPopup(true);
       return;
     }
+
 
     setLoading(true); // 🟡 Start loading
 

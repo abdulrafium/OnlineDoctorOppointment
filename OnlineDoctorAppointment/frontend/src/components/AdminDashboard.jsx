@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './AdminDashboard.css';
-import { DoctorRegistration } from './DoctorRegistration'; // ✅ Make sure this is a default export
+import { DoctorRegistration } from './DoctorRegistration';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -9,6 +9,15 @@ const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
+  const [appointments, setAppointments] = useState([]);
+  const [doctors, setDoctors] = useState([]);
+
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const appointmentsPerPage = 6;
+  const indexOfLast = currentPage * appointmentsPerPage;
+  const indexOfFirst = indexOfLast - appointmentsPerPage;
+  const currentAppointments = appointments.slice(indexOfFirst, indexOfLast);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -32,6 +41,29 @@ const AdminDashboard = () => {
 
     fetchUserData();
   }, [navigate]);
+
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/get-doctors");
+        const data = await res.json();
+        if (data.success) {
+          setDoctors(data.doctors);
+        } else {
+          setDoctors([]);
+        }
+      } catch (error) {
+        console.error("Error fetching doctors:", error);
+      }
+    };
+
+    fetchDoctors();
+  }, []);
+
+  //Fetch Doctor Appointments Backend Logic
+
+  //Handle Status Update (Confirm/Reject ) Backend Logic
+  
 
   const handleLogout = () => {
     setLoggingOut(true);
@@ -68,12 +100,81 @@ const AdminDashboard = () => {
             <p>This is your admin dashboard where you can manage doctors and appointments.</p>
           </div>
         )}
+
         {activeTab === 'appointments' && (
-          <div className="tab-content">
+          <div className="tab-content appointments-tab">
             <h2>Doctor Appointments</h2>
-            <p>(Appointment confirmation/cancellation logic will go here...)</p>
+
+            {appointments.length === 0 ? (
+              <p>No appointments found.</p>
+            ) : (
+              <>
+                <div className="appointments-list">
+                  {currentAppointments.map((appointment, index) => {
+                    const doctor = doctors.find(
+                      doc =>
+                        doc.firstName === appointment.doctorFirstName &&
+                        doc.lastName === appointment.doctorLastName
+                    );
+
+                    return (
+                      <div key={index} className="appointment-card">
+                        <img
+                          src="https://cdn-icons-png.flaticon.com/512/3870/3870822.png"
+                          alt="Doctor"
+                          className="appointment-doctor-image"
+                        />
+                        <div className="appointment-details">
+                          <h3>{appointment.patientFirstName} {appointment.patientLastName}</h3>
+                          <p><strong>Father:</strong> {appointment.patientFatherName}</p>
+                          <p><strong>Doctor:</strong> Dr. {appointment.doctorFirstName} {appointment.doctorLastName}</p>
+                          <p><strong>Specialization:</strong> {appointment.doctorSpecialization}</p>
+                          <p><strong>Date:</strong> {new Date(appointment.date).toLocaleDateString()}</p>
+                          <p><strong>Time:</strong>{doctor?.availableTime || 'N/A'}</p>
+                          <p><strong>Fee:</strong> Rs. {doctor?.fee || 'N/A'}</p>
+                          <p>
+                            <strong>Status:</strong>{' '}
+                            <span className={`status-${appointment.status.toLowerCase()}`}>
+                              {appointment.status}
+                            </span>
+                          </p>
+                          {appointment.status === "Pending" && (
+                            <div className="appointment-actions">
+                              <button onClick={() => handleStatusUpdate(appointment._id, "Confirmed")} className="confirm-btn">Confirm</button>
+                              <button onClick={() => handleStatusUpdate(appointment._id, "Rejected")} className="reject-btn">Reject</button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Pagination Controls */}
+                <div className="pagination-controls">
+                  <button
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
+                  >
+                    ⬅ Previous
+                  </button>
+                  <span>Page {currentPage}</span>
+                  <button
+                    onClick={() =>
+                      setCurrentPage(prev =>
+                        indexOfLast < appointments.length ? prev + 1 : prev
+                      )
+                    }
+                    disabled={indexOfLast >= appointments.length}
+                  >
+                    Next ➡
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         )}
+
         {activeTab === 'createDoctor' && (
           <div className="tab-content">
             <h2>Create Doctor Account</h2>
