@@ -9,6 +9,8 @@ const User = require("./models/Users");
 const userRoutes = require("./routes/userRoutes"); // ✅ Import new routes
 const patientDetailsRoutes = require("./routes/patientDetailsRoutes");
 const doctorDetailsRoutes = require("./routes/doctorDetailsRoutes");
+const appointmentRoutes = require("./routes/appointments");
+
 
 
 
@@ -106,6 +108,7 @@ app.post("/api/login", async (req, res) => {
 app.use("/api", userRoutes);
 app.use("/api", patientDetailsRoutes);
 app.use("/api", doctorDetailsRoutes);
+app.use("/api", appointmentRoutes);
 
 // Start Server
 const PORT = process.env.PORT || 5000;

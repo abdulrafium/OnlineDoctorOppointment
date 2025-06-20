@@ -60,10 +60,47 @@ const AdminDashboard = () => {
     fetchDoctors();
   }, []);
 
-  //Fetch Doctor Appointments Backend Logic
+  useEffect(() => {
+    if (activeTab === "appointments") {
+      const fetchAppointments = async () => {
+        try {
+          const res = await fetch("http://localhost:5000/api/get-all-appointments");
+          const data = await res.json();
+          if (data.success) {
+            setAppointments(data.appointments);
+          } else {
+            setAppointments([]);
+          }
+        } catch (error) {
+          console.error("Error fetching appointments:", error);
+        }
+      };
 
-  //Handle Status Update (Confirm/Reject ) Backend Logic
-  
+      fetchAppointments();
+    }
+  }, [activeTab]);
+
+  const handleStatusUpdate = async (id, newStatus) => {
+    try {
+      const res = await fetch("http://localhost:5000/api/update-appointment-status", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ _id: id, status: newStatus }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        setAppointments(prev =>
+          prev.map(app => app._id === id ? { ...app, status: newStatus } : app)
+        );
+      } else {
+        alert("Failed to update status");
+      }
+    } catch (error) {
+      console.error("Error updating appointment status:", error);
+    }
+  };
 
   const handleLogout = () => {
     setLoggingOut(true);

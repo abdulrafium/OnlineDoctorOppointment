@@ -59,7 +59,27 @@ const DoctorDashboard = () => {
     }
   };
 
-  //Fetch Doctor Confirmed Appointments Backend Logic
+  useEffect(() => {
+    if (!user._id) return;
+
+    const fetchAppointments = async () => {
+      try {
+        const res = await fetch(`http://localhost:5000/api/doctor-appointments/${user._id}`);
+        const data = await res.json();
+        if (data.success) {
+          const confirmed = data.appointments.filter(
+            (appointment) => appointment.status === 'Confirmed'
+          );
+          setAppointments(confirmed);
+          setDoctorFee(data.fee);
+        }
+      } catch (error) {
+        console.error("Error fetching appointments:", error);
+      }
+    };
+
+    fetchAppointments();
+  }, [user]);
 
   const handleLogout = () => {
     setLoggingOut(true);
@@ -70,8 +90,33 @@ const DoctorDashboard = () => {
     }, 1500);
   };
 
-  
-  //Set Doctor Available Time Backend Logic
+  const handleAvailableTimeSave = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch("http://localhost:5000/api/save-doctor-details", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: user._id,
+          availableTime: `${availableTime} ${timePeriod}`, //store both
+        }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        setPopup("Availability time saved successfully");
+      } else {
+        setPopup("Failed to save time ❌");
+      }
+
+      setTimeout(() => setPopup(null), 3000);
+
+    } catch (error) {
+      console.error("Error saving availability:", error);
+      setPopup("Server error while saving time ❌");
+      setTimeout(() => setPopup(null), 3000);
+    }
+  };
 
 
 

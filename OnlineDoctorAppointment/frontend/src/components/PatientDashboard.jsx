@@ -69,7 +69,25 @@ const PatientDashboard = () => {
   useEffect(() => {
     let intervalId;
 
-    //Fetch Appointments
+    const fetchAppointments = async () => {
+      if (!user._id) return;
+      try {
+        const res = await fetch("http://localhost:5000/api/get-appointments", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ patientUserId: user._id }),
+        });
+        const data = await res.json();
+        if (data.success) setAppointments(data.appointments || []);
+      } catch (err) {
+        console.error("Error fetching appointments:", err);
+      }
+    };
+
+    intervalId = setInterval(fetchAppointments, 5000);
+    fetchAppointments();
+    return () => clearInterval(intervalId);
+  }, [user._id]);
 
   const handleLogout = () => {
     setLoggingOut(true);
@@ -80,7 +98,59 @@ const PatientDashboard = () => {
     }, 1500);
   };
 
-  // Handle making an appointment
+  const handleMakeAppointment = (doctorId) => {
+    const alreadyBooked = appointments.some(
+      (appt) => appt.doctorUserId === doctorId
+    );
+    if (alreadyBooked) {
+      setPopup({ type: "error", message: "You already booked this doctor." });
+      setTimeout(() => setPopup(null), 3000);
+    } else {
+      setSelectedDoctorId(doctorId);
+      setAppointmentDate('');
+      setShowConfirmModal(true);
+    }
+  };
+
+  const confirmAppointment = async () => {
+    if (!appointmentDate) return;
+    setLoadingAppointment(true);
+    try {
+      const res = await fetch("http://localhost:5000/api/book-appointment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          patientUserId: user._id,
+          doctorUserId: selectedDoctorId,
+          appointmentDate,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setPopup({ type: "success", message: "✅ Appointment booked!" });
+        setAppointments((prev) => [
+          ...prev,
+          {
+            patientUserId: user._id,
+            doctorUserId: selectedDoctorId,
+            date: appointmentDate,
+            status: 'pending'
+          }
+        ]);
+      } else {
+        setPopup({ type: "error", message: "❌ Failed: " + data.msg });
+      }
+    } catch (err) {
+      console.error("❌ Booking error:", err);
+      setPopup({ type: "error", message: "❌ Something went wrong." });
+    } finally {
+      setLoadingAppointment(false);
+      setShowConfirmModal(false);
+      setSelectedDoctorId(null);
+      setAppointmentDate('');
+      setTimeout(() => setPopup(null), 3000);
+    }
+  };
 
   return (
     <div className="dashboard-container">
