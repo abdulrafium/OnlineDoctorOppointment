@@ -6,7 +6,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const User = require("./models/Users");
-const userRoutes = require("./routes/userRoutes"); // ✅ Import new routes
+const userRoutes = require("./routes/userRoutes"); 
 const patientDetailsRoutes = require("./routes/patientDetailsRoutes");
 const doctorDetailsRoutes = require("./routes/doctorDetailsRoutes");
 const appointmentRoutes = require("./routes/appointments");
@@ -24,7 +24,7 @@ app.use(express.json());
 // Connect MongoDB
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB Connected"))
-  .catch(err => console.error("❌ MongoDB connection error:", err));
+  .catch(err => console.error("MongoDB connection error:", err));
 
 // Helper: validate email
 const isValidEmail = email => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -104,7 +104,7 @@ app.post("/api/login", async (req, res) => {
   }
 });
 
-// ✅ Use modular user routes
+// Use modular user routes
 app.use("/api", userRoutes);
 app.use("/api", patientDetailsRoutes);
 app.use("/api", doctorDetailsRoutes);

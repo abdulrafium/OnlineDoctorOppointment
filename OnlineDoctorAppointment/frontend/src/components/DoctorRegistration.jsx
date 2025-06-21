@@ -11,7 +11,7 @@ export function DoctorRegistration({ role }) {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [popup, setPopup] = useState(null);
-  const [loading, setLoading] = useState(false); // 🔄 Spinner state
+  const [loading, setLoading] = useState(false); // Spinner state
 
   useEffect(() => {
     if (firstName && lastName) {
@@ -53,7 +53,7 @@ export function DoctorRegistration({ role }) {
     return showPopup({ message: "Passwords do not match.", type: "error" });
   }
 
-    setLoading(true); // 🟡 Start spinner
+    setLoading(true); // Start spinner
 
     try {
       const res = await fetch("http://localhost:5000/api/register", {
@@ -78,7 +78,7 @@ export function DoctorRegistration({ role }) {
     } catch (err) {
       showPopup({ message: "Registration failed.", type: "error" });
     } finally {
-      setLoading(false); // 🔴 Stop spinner
+      setLoading(false); // Stop spinner
     }
   };
 
@@ -90,7 +90,7 @@ export function DoctorRegistration({ role }) {
         <input type="text" value={firstName} placeholder="First Name *" onChange={e => setFirstName(e.target.value)} className="registration-input" />
         <input type="text" value={lastName} placeholder="Last Name *" onChange={e => setLastName(e.target.value)} className="registration-input" />
         <input type="text" value={username} placeholder="Username (auto-generated)" readOnly className="registration-input registration-input-readonly" />
-        <input type="email" value={email} placeholder="Email *" onChange={e => setEmail(e.target.value)} className="registration-input" />
+        <input type="email" value={email} placeholder="Active Email *" onChange={e => setEmail(e.target.value)} className="registration-input" />
         <input type="password" value={password} placeholder="Password *" onChange={e => setPassword(e.target.value)} className="registration-input" />
         <input type="password" value={confirmPassword} placeholder="Confirm Password *" onChange={e => setConfirmPassword(e.target.value)} className="registration-input" />
 

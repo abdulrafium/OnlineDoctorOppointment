@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './ChangePassword.css';
-import Popup from './Popup'; // ✅ Ensure this is correctly imported
+import Popup from './Popup';
 
 const ChangePassword = () => {
   const [formData, setFormData] = useState({
@@ -12,7 +12,7 @@ const ChangePassword = () => {
   const [message, setMessage] = useState('');
   const [type, setType] = useState('');
   const [showPopup, setShowPopup] = useState(false);
-  const [loading, setLoading] = useState(false); // 🔄 Spinner state
+  const [loading, setLoading] = useState(false); // Spinner state
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -46,7 +46,7 @@ const ChangePassword = () => {
     }
 
 
-    setLoading(true); // 🟡 Start loading
+    setLoading(true); // Start loading
 
     try {
       const token = localStorage.getItem('token');
@@ -75,7 +75,7 @@ const ChangePassword = () => {
       setMessage('Server error while changing password.');
       setShowPopup(true);
     } finally {
-      setLoading(false); // 🔴 Stop loading
+      setLoading(false); // Stop loading
     }
   };
 

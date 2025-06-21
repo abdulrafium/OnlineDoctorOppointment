@@ -7,7 +7,7 @@ export function PatientLogin({ role }) {
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [popup, setPopup] = React.useState(null);
-  const [loading, setLoading] = React.useState(false); // 🔄 Spinner state
+  const [loading, setLoading] = React.useState(false); // Spinner state
 
   const navigate = useNavigate();
 
@@ -26,7 +26,7 @@ export function PatientLogin({ role }) {
       return showPopup({ message: "Please enter a valid email with a supported domain.", type: "error" });
     }
 
-    setLoading(true); // 🟡 Start spinner
+    setLoading(true); // Start spinner
 
     try {
       const res = await fetch("http://localhost:5000/api/login", {
@@ -54,7 +54,7 @@ export function PatientLogin({ role }) {
     } catch (err) {
       showPopup({ message: "Login failed. Server error.", type: "error" });
     } finally {
-      setLoading(false); // 🔴 Stop spinner
+      setLoading(false); // Stop spinner
     }
   };
 

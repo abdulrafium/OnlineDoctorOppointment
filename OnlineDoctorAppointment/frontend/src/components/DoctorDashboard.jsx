@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ChangePassword from './ChangePassword';
 import DoctorProfile from './DoctorProfile';
-import Popup from './Popup'; //Add this line
+import Popup from './Popup';
 import './DoctorDashboard.css';
 
 const DoctorDashboard = () => {
@@ -12,16 +12,18 @@ const DoctorDashboard = () => {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
   const [appointments, setAppointments] = useState([]);
+  const [filteredAppointments, setFilteredAppointments] = useState([]);
+  const [filterDate, setFilterDate] = useState('');
   const [doctorFee, setDoctorFee] = useState(null);
-  const [availableTime, setAvailableTime] = useState(""); // NEW
-  const [popup, setPopup] = useState(null); // Popup message state
-  const [timePeriod, setTimePeriod] = useState("AM"); //new
+  const [availableTime, setAvailableTime] = useState("");
+  const [popup, setPopup] = useState(null);
+  const [timePeriod, setTimePeriod] = useState("AM");
 
   const [currentPage, setCurrentPage] = useState(1);
   const appointmentsPerPage = 3;
   const indexOfLast = currentPage * appointmentsPerPage;
   const indexOfFirst = indexOfLast - appointmentsPerPage;
-  const currentAppointments = appointments.slice(indexOfFirst, indexOfLast);
+  const currentAppointments = filteredAppointments.slice(indexOfFirst, indexOfLast);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -35,7 +37,7 @@ const DoctorDashboard = () => {
         const data = await res.json();
         if (data.success) {
           setUser(data.user);
-          fetchDoctorDetails(data.user._id); //Fetch time
+          fetchDoctorDetails(data.user._id);
         } else {
           navigate("/doctor");
         }
@@ -71,6 +73,7 @@ const DoctorDashboard = () => {
             (appointment) => appointment.status === 'Confirmed'
           );
           setAppointments(confirmed);
+          setFilteredAppointments(confirmed); // initialize filtered
           setDoctorFee(data.fee);
         }
       } catch (error) {
@@ -98,7 +101,7 @@ const DoctorDashboard = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           userId: user._id,
-          availableTime: `${availableTime} ${timePeriod}`, //store both
+          availableTime: `${availableTime} ${timePeriod}`,
         }),
       });
 
@@ -106,19 +109,37 @@ const DoctorDashboard = () => {
       if (data.success) {
         setPopup("Availability time saved successfully");
       } else {
-        setPopup("Failed to save time ❌");
+        setPopup("Failed to save time");
       }
 
       setTimeout(() => setPopup(null), 3000);
-
     } catch (error) {
       console.error("Error saving availability:", error);
-      setPopup("Server error while saving time ❌");
+      setPopup("Server error while saving time");
       setTimeout(() => setPopup(null), 3000);
     }
   };
 
+  const handleFilterDateChange = (e) => {
+    const selectedDate = e.target.value;
+    setFilterDate(selectedDate);
+    if (!selectedDate) {
+      setFilteredAppointments(appointments);
+      return;
+    }
 
+    const filtered = appointments.filter((appt) =>
+      new Date(appt.date).toDateString() === new Date(selectedDate).toDateString()
+    );
+    setFilteredAppointments(filtered);
+    setCurrentPage(1);
+  };
+
+  const clearFilter = () => {
+    setFilterDate('');
+    setFilteredAppointments(appointments);
+    setCurrentPage(1);
+  };
 
   return (
     <div className="dashboard-container">
@@ -146,7 +167,6 @@ const DoctorDashboard = () => {
             <h1>Welcome, Dr. {user.firstName} 👋</h1>
             <p>This is your doctor dashboard where you can manage your appointments and set your available time.</p>
 
-            {/*Availability Time Section */}
             <div className="availability-card">
               <h2>Set Your Available Time</h2>
               <form onSubmit={handleAvailableTimeSave}>
@@ -163,16 +183,14 @@ const DoctorDashboard = () => {
                   <select
                     value={timePeriod}
                     onChange={(e) => setTimePeriod(e.target.value)}
-                    className="time-period-select" // add class
+                    className="time-period-select"
                   >
                     <option value="AM">AM</option>
                     <option value="PM">PM</option>
                   </select>
-
                 </div>
                 <button type="submit">Save Time</button>
               </form>
-
             </div>
           </div>
         )}
@@ -180,7 +198,18 @@ const DoctorDashboard = () => {
         {activeTab === 'patients' && (
           <div className="tab-content appointments-tab">
             <h2>Confirmed Appointments</h2>
-            {appointments.length === 0 ? (
+
+            {/* Filter bar */}
+            <div className="appointment-filter-bar">
+              <input
+                type="date"
+                value={filterDate}
+                onChange={handleFilterDateChange}
+              />
+              <button onClick={clearFilter} className="show-all-btn">Show All</button>
+            </div>
+
+            {filteredAppointments.length === 0 ? (
               <p>No confirmed appointments found.</p>
             ) : (
               <>
@@ -199,8 +228,7 @@ const DoctorDashboard = () => {
                         <p><strong>Specialization:</strong> {appointment.doctorSpecialization}</p>
                         <p><strong>Date:</strong> {new Date(appointment.date).toLocaleDateString()}</p>
                         <p><strong>Fee:</strong> Rs. {doctorFee || 'N/A'}</p>
-                        <p>
-                          <strong>Status:</strong>{' '}
+                        <p><strong>Status:</strong>{' '}
                           <span className={`status-${appointment.status.toLowerCase()}`}>
                             {appointment.status}
                           </span>
@@ -213,8 +241,8 @@ const DoctorDashboard = () => {
                   <button onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage === 1}>⬅ Previous</button>
                   <span>Page {currentPage}</span>
                   <button
-                    onClick={() => setCurrentPage(prev => indexOfLast < appointments.length ? prev + 1 : prev)}
-                    disabled={indexOfLast >= appointments.length}
+                    onClick={() => setCurrentPage(prev => indexOfLast < filteredAppointments.length ? prev + 1 : prev)}
+                    disabled={indexOfLast >= filteredAppointments.length}
                   >
                     Next ➡
                   </button>
@@ -234,9 +262,7 @@ const DoctorDashboard = () => {
             <h3>Are you sure you want to logout?</h3>
             <div className="modal-buttons">
               <button onClick={handleLogout} disabled={loggingOut}>
-                {loggingOut ? (
-                  <>Logging out... <span className="logout-spinner"></span></>
-                ) : "Yes"}
+                {loggingOut ? <>Logging out... <span className="logout-spinner"></span></> : "Yes"}
               </button>
               <button onClick={() => setShowLogoutModal(false)} disabled={loggingOut}>No</button>
             </div>
@@ -244,7 +270,6 @@ const DoctorDashboard = () => {
         </div>
       )}
 
-      {/*Show popup */}
       {popup && <Popup message={popup} onClose={() => setPopup(null)} />}
     </div>
   );

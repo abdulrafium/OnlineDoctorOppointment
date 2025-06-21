@@ -3,7 +3,7 @@ const router = express.Router();
 const DoctorProfile = require("../models/DoctorDetails");
 const User = require("../models/Users");
 
-// 🔸 POST: Save or Update Doctor Details (Partial Update Allowed)
+// POST: Save or Update Doctor Details (Partial Update Allowed)
 router.post("/save-doctor-details", async (req, res) => {
   const {
     userId,
@@ -44,7 +44,7 @@ router.post("/save-doctor-details", async (req, res) => {
       return res.status(200).json({ success: true, updated: true, msg: "Doctor profile updated successfully" });
     }
 
-    // 🔒 New profile: All required fields must be present
+    // New profile: All required fields must be present
     if (
       !cnic || !gender || !specialization ||
       !city || !hospital || !experience || !fee || !description
@@ -76,7 +76,7 @@ router.post("/save-doctor-details", async (req, res) => {
     res.status(200).json({ success: true, updated: false, msg: "Doctor profile created successfully" });
 
   } catch (err) {
-    console.error("❌ Error saving/updating doctor profile:", err);
+    console.error("Error saving/updating doctor profile:", err);
     res.status(500).json({ success: false, msg: "Server error", error: err.message });
   }
 });
@@ -90,7 +90,7 @@ router.get("/get-doctor-details/:userId", async (req, res) => {
     }
     res.status(200).json({ success: true, profile });
   } catch (err) {
-    console.error("❌ Error fetching doctor profile:", err);
+    console.error("Error fetching doctor profile:", err);
     res.status(500).json({ success: false, msg: "Error fetching doctor profile", error: err.message });
   }
 });
@@ -123,7 +123,7 @@ router.get("/get-doctors", async (req, res) => {
 
     res.status(200).json({ success: true, doctors: mergedDoctors });
   } catch (err) {
-    console.error("❌ Error fetching doctors list:", err);
+    console.error("Error fetching doctors list:", err);
     res.status(500).json({ success: false, msg: "Server error", error: err.message });
   }
 });

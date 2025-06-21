@@ -92,7 +92,7 @@ const PatientProfile = () => {
             if (data.msg === "Details saved successfully" || data.msg === "Details updated successfully") {
                 showPopup(data.msg, "success");
 
-                // ✅ Reset form fields
+                // Reset form fields
                 setFormData({
                     cnic: '',
                     mobile: '',

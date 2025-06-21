@@ -267,3 +267,41 @@
 .pagination-controls span {
   font-weight: bold;
 }
+
+
+.appointment-filter-bar {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.filter-date-input {
+  padding: 5px 10px;
+  border-radius: 6px;
+}
+.show-all-btn {
+  padding: 6px 12px;
+  background-color: #4fadad;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #fff;
+  border-top: 2px solid #4fadad;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

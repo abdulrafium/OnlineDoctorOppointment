@@ -25,31 +25,39 @@
   .registration-button,
   .patient-login-button,
   .login-button {
-    width: 100% !important;
     font-size: 16px !important;
-    padding: 12px !important;
+    padding: 10px 16px !important;
+    /* Removed width: 100% to keep size normal */
   }
 
   input[type="text"],
   input[type="email"],
   input[type="password"],
+  input[type="date"],
   .registration-input,
   .patient-login-input,
   .login-input {
     width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 10px !important;
+    margin: 0 auto 15px auto !important;
+    display: block !important;
   }
+
 
   .popup {
     width: 90% !important;
-    top: 10px !important;
-    right: 5% !important;
+    top: 20px !important;
+    left: 5% !important;
     font-size: 14px !important;
     padding: 12px !important;
-    min-width: unset !important;
+    box-sizing: border-box !important;
+    position: fixed !important;
+    z-index: 1000 !important;
   }
 
   img {
-    width: 100% !important;
+    max-width: 100% !important;
     height: auto !important;
   }
 
@@ -60,7 +68,26 @@
     margin-top: 10px !important;
   }
 
-  /* 👇 NEW: PatientDashboard responsive styles */
+  /* 👇 Sidebar Profile Image & Name Centering */
+  .profile-box {
+    width: 100%;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    margin-bottom: 20px;
+  }
+
+  .profile-box .profile-image {
+    width: 70px !important;
+    height: 70px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    margin-bottom: 10px;
+  }
+
+  /* 👇 Dashboard layout */
   .dashboard-container {
     flex-direction: column !important;
   }
@@ -81,7 +108,7 @@
     padding: 20px !important;
   }
 
-  /* 👇 NEW: PatientProfile responsive styles */
+  /* 👇 PatientProfile styles */
   .patient-profile-container {
     padding: 20px !important;
     margin: 20px auto !important;
@@ -98,11 +125,10 @@
   }
 
   .patient-profile-button {
-    width: 100% !important;
     font-size: 14px !important;
   }
 
-  /* 👇 NEW: ChangePassword responsive styles */
+  /* 👇 ChangePassword styles */
   .change-password-container {
     padding: 20px !important;
     margin: 30px auto !important;
@@ -114,48 +140,100 @@
   }
 
   .change-password-container button {
-    width: 100% !important;
     font-size: 14px !important;
   }
-}
 
+  /* 👇 Appointments tab styles */
+  .appointments-tab {
+    padding: 15px !important;
+  }
 
-/* 👇 NEW: Appointment tab responsive styles */
-.appointments-tab {
-  padding: 15px !important;
-}
+  .appointment-button {
+    font-size: 14px !important;
+    padding: 10px 16px !important;
+  }
 
-.appointments-list {
-  flex-direction: column !important;
-  gap: 15px !important;
-  align-items: center !important;
-  justify-content: center !important;
-}
+  .appointments-list {
+    flex-direction: column !important;
+    gap: 15px !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
 
-.appointment-card {
-  flex-direction: column !important;
-  width: 100% !important;
-  max-width: 100% !important;
-  box-sizing: border-box !important;
-  align-items: flex-start !important;
-  padding: 15px !important;
-  gap: 10px !important;
-}
+  .appointment-card {
+    flex-direction: column !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    align-items: flex-start !important;
+    padding: 15px !important;
+    gap: 10px !important;
+  }
 
-.appointment-doctor-image {
-  width: 60px !important;
-  height: 60px !important;
-}
+  .appointment-doctor-image {
+    width: 60px !important;
+    height: 60px !important;
+  }
 
-.appointment-details h3 {
-  font-size: 1rem !important;
-}
+  .appointment-details h3 {
+    font-size: 1rem !important;
+  }
 
-.appointment-details p {
-  font-size: 0.9rem !important;
-}
+  .appointment-details p {
+    font-size: 0.9rem !important;
+  }
 
-.appointment-button {
-  width: 100% !important;
-  font-size: 14px !important;
+  .appointment-button {
+    font-size: 14px !important;
+    padding: 10px 14px !important;
+  }
+
+  /* 👇 Pagination */
+  .pagination-controls {
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+
+  .pagination-controls button {
+    font-size: 14px !important;
+    padding: 10px 16px !important;
+    margin-bottom: 10px !important;
+    width: auto !important;
+  }
+
+  /* 👇 Date input responsiveness */
+  input[type="date"] {
+    width: 100% !important;
+    font-size: 14px !important;
+    padding: 10px !important;
+    box-sizing: border-box !important;
+    border: 1px solid #ccc !important;
+    border-radius: 5px !important;
+  }
+
+  /* 👇 Modal input adjustment */
+  .modal-content input[type="date"] {
+    width: 100% !important;
+    font-size: 14px !important;
+    padding: 10px !important;
+    margin-bottom: 15px !important;
+  }
+
+  .show-all-btn {
+    font-size: 14px !important;
+    padding: 8px 14px !important;
+    width: auto;
+    align-self: center;
+  }
+
+  .appointment-filter-bar {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    align-items: stretch;
+  }
+
+  .appointment-filter-bar input[type="date"] {
+    width: 100%;
+  }
 }

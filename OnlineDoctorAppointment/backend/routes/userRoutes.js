@@ -5,7 +5,7 @@ const User = require("../models/Users");
 
 const router = express.Router();
 
-// ✅ Route to get user by token
+// Route to get user by token
 router.post("/get-user", async (req, res) => {
   const { token } = req.body;
 
@@ -25,7 +25,7 @@ router.post("/get-user", async (req, res) => {
   }
 });
 
-// ✅ Route to change password using token
+// Route to change password using token
 router.post("/change-password", async (req, res) => {
   const { token, currentPassword, newPassword } = req.body;
 

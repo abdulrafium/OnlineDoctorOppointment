@@ -173,11 +173,28 @@
 }
 
 .doctor-image {
-  width: 60px;
-  height: 60px;
+  width: 150px;         /* Default for desktop/laptop */
+  height: 150px;
   object-fit: contain;
   margin-bottom: 10px;
+  border-radius: 50%;   /* Optional: make it circular for better UI */
 }
+
+/*For tablets and mobile devices */
+@media (max-width: 768px) {
+  .doctor-image {
+    width: 100px;
+    height: 100px;
+  }
+}
+
+@media (max-width: 480px) {
+  .doctor-image {
+    width: 80px;
+    height: 80px;
+  }
+}
+
 
 
 @media (max-width: 992px) {
@@ -199,10 +216,12 @@
   padding: 8px 12px;
   border: none;
   border-radius: 8px;
-  margin-top: 10px;
+  margin: 30px auto 10px auto; /* Top: 30px, Bottom: 10px, Centered */
   cursor: pointer;
   transition: background-color 0.3s ease;
+  display: block;
 }
+
 
 .appointment-button:hover {
   background-color: #388e3c;
@@ -230,11 +249,20 @@
   gap: 15px;
 }
 
+/* Default for desktops/laptops */
 .appointment-doctor-image {
   width: 80px;
   height: 80px;
   border-radius: 50%;
   object-fit: cover;
+}
+
+/* Mobile view override */
+@media (max-width: 768px) {
+  .appointment-doctor-image {
+    width: 60px !important;
+    height: 60px !important;
+  }
 }
 
 .appointment-details {
@@ -305,17 +333,21 @@
 }
 
 
-.download-button {
-  background-color: #4caf50;
-  color: white;
-  padding: 6px 12px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  margin-top: 8px;
-  transition: 0.3s ease;
+.appointment-filter-bar {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1rem;
 }
-
-.download-button:hover {
-  background-color: #45a049;
+.filter-date-input {
+  padding: 5px 10px;
+  border-radius: 6px;
+}
+.show-all-btn {
+  padding: 6px 12px;
+  background-color: #4fadad;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
 }

@@ -268,3 +268,140 @@
   border-color: #4fadad;
   box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
 }
+
+
+.appointment-filter-bar {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.filter-date-input {
+  padding: 5px 10px;
+  border-radius: 6px;
+}
+.show-all-btn {
+  padding: 6px 12px;
+  background-color: #4fadad;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+
+/* Responsive Styles for DoctorDashboard */
+@media (max-width: 768px) {
+  .dashboard-container {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    padding: 20px 15px;
+    box-shadow: none;
+    align-items: flex-start;
+  }
+
+  .profile-box {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .profile-box h3 {
+    font-size: 16px;
+    margin: 0;
+  }
+
+  .profile-image {
+    width: 60px;
+    height: 60px;
+  }
+
+  .nav-links li {
+    font-size: 14px;
+    padding: 8px 12px;
+    margin: 10px 0;
+  }
+
+  .main-content {
+    padding: 20px;
+  }
+
+  .tab-content h1 {
+    font-size: 22px;
+  }
+
+  .tab-content p {
+    font-size: 14px;
+  }
+
+  .appointments-list {
+    grid-template-columns: 1fr !important; /* 1 column on mobile */
+    gap: 15px;
+  }
+
+  .appointment-card {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .appointment-doctor-image {
+    width: 60px;
+    height: 60px;
+  }
+
+  .appointment-details h3 {
+    font-size: 1rem;
+  }
+
+  .appointment-details p {
+    font-size: 0.9rem;
+  }
+
+  .pagination-controls {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .availability-card {
+    width: 100%;
+    padding: 15px;
+  }
+
+  .appointment-filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .show-all-btn {
+    align-self: center;
+    font-size: 14px;
+    padding: 8px 12px;
+  }
+
+  .modal-content {
+    width: 90%;
+    padding: 20px;
+  }
+
+  .modal-buttons {
+    flex-direction: row;
+    gap: 10px;
+  }
+
+  .modal-buttons button {
+    width: 100%;
+    padding: 10px;
+  }
+
+  .time-period-select {
+    width: 100%;
+    font-size: 14px;
+  }
+}
+

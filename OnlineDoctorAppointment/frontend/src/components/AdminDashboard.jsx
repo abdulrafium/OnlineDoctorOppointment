@@ -10,14 +10,16 @@ const AdminDashboard = () => {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
   const [appointments, setAppointments] = useState([]);
+  const [filteredAppointments, setFilteredAppointments] = useState([]);
   const [doctors, setDoctors] = useState([]);
+  const [filterDate, setFilterDate] = useState('');
+  const [loadingStatus, setLoadingStatus] = useState({});
 
-  // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const appointmentsPerPage = 6;
   const indexOfLast = currentPage * appointmentsPerPage;
   const indexOfFirst = indexOfLast - appointmentsPerPage;
-  const currentAppointments = appointments.slice(indexOfFirst, indexOfLast);
+  const currentAppointments = filteredAppointments.slice(indexOfFirst, indexOfLast);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -68,8 +70,14 @@ const AdminDashboard = () => {
           const data = await res.json();
           if (data.success) {
             setAppointments(data.appointments);
+            const today = new Date().toDateString();
+            const todayAppointments = data.appointments.filter(
+              (appt) => new Date(appt.date).toDateString() === today
+            );
+            setFilteredAppointments(todayAppointments);
           } else {
             setAppointments([]);
+            setFilteredAppointments([]);
           }
         } catch (error) {
           console.error("Error fetching appointments:", error);
@@ -81,6 +89,9 @@ const AdminDashboard = () => {
   }, [activeTab]);
 
   const handleStatusUpdate = async (id, newStatus) => {
+    const key = id + newStatus;
+    setLoadingStatus(prev => ({ ...prev, [key]: true }));
+
     try {
       const res = await fetch("http://localhost:5000/api/update-appointment-status", {
         method: "POST",
@@ -94,11 +105,16 @@ const AdminDashboard = () => {
         setAppointments(prev =>
           prev.map(app => app._id === id ? { ...app, status: newStatus } : app)
         );
+        setFilteredAppointments(prev =>
+          prev.map(app => app._id === id ? { ...app, status: newStatus } : app)
+        );
       } else {
         alert("Failed to update status");
       }
     } catch (error) {
       console.error("Error updating appointment status:", error);
+    } finally {
+      setLoadingStatus(prev => ({ ...prev, [key]: false }));
     }
   };
 
@@ -111,15 +127,31 @@ const AdminDashboard = () => {
     }, 1500);
   };
 
+  const handleFilterDate = (e) => {
+    const date = e.target.value;
+    setFilterDate(date);
+
+    if (!date) return;
+
+    const selected = new Date(date).toDateString();
+    const filtered = appointments.filter(
+      (appt) => new Date(appt.date).toDateString() === selected
+    );
+    setFilteredAppointments(filtered);
+    setCurrentPage(1);
+  };
+
+  const handleShowAll = () => {
+    setFilterDate('');
+    setFilteredAppointments(appointments);
+    setCurrentPage(1);
+  };
+
   return (
     <div className="dashboard-container">
       <aside className="sidebar">
         <div className="profile-box">
-          <img
-            src="https://cdn-icons-png.flaticon.com/512/2922/2922522.png"
-            alt="Admin Profile"
-            className="profile-image"
-          />
+          <img src="https://cdn-icons-png.flaticon.com/512/2922/2922522.png" alt="Admin Profile" className="profile-image" />
           <h3>Admin {user?.firstName || ''} {user?.lastName || ''}</h3>
         </div>
         <ul className="nav-links">
@@ -142,7 +174,12 @@ const AdminDashboard = () => {
           <div className="tab-content appointments-tab">
             <h2>Doctor Appointments</h2>
 
-            {appointments.length === 0 ? (
+            <div className="appointment-filter-bar">
+              <input type="date" value={filterDate} onChange={handleFilterDate} />
+              <button onClick={handleShowAll} className="show-all-btn">Show All</button>
+            </div>
+
+            {filteredAppointments.length === 0 ? (
               <p>No appointments found.</p>
             ) : (
               <>
@@ -167,7 +204,7 @@ const AdminDashboard = () => {
                           <p><strong>Doctor:</strong> Dr. {appointment.doctorFirstName} {appointment.doctorLastName}</p>
                           <p><strong>Specialization:</strong> {appointment.doctorSpecialization}</p>
                           <p><strong>Date:</strong> {new Date(appointment.date).toLocaleDateString()}</p>
-                          <p><strong>Time:</strong>{doctor?.availableTime || 'N/A'}</p>
+                          <p><strong>Time:</strong> {doctor?.availableTime || 'N/A'}</p>
                           <p><strong>Fee:</strong> Rs. {doctor?.fee || 'N/A'}</p>
                           <p>
                             <strong>Status:</strong>{' '}
@@ -177,8 +214,28 @@ const AdminDashboard = () => {
                           </p>
                           {appointment.status === "Pending" && (
                             <div className="appointment-actions">
-                              <button onClick={() => handleStatusUpdate(appointment._id, "Confirmed")} className="confirm-btn">Confirm</button>
-                              <button onClick={() => handleStatusUpdate(appointment._id, "Rejected")} className="reject-btn">Reject</button>
+                              <button
+                                onClick={() => handleStatusUpdate(appointment._id, "Confirmed")}
+                                className="confirm-btn"
+                                disabled={loadingStatus[appointment._id + "Confirmed"]}
+                              >
+                                {loadingStatus[appointment._id + "Confirmed"] ? (
+                                  <span className="spinner"></span>
+                                ) : (
+                                  "Confirm"
+                                )}
+                              </button>
+                              <button
+                                onClick={() => handleStatusUpdate(appointment._id, "Rejected")}
+                                className="reject-btn"
+                                disabled={loadingStatus[appointment._id + "Rejected"]}
+                              >
+                                {loadingStatus[appointment._id + "Rejected"] ? (
+                                  <span className="spinner"></span>
+                                ) : (
+                                  "Reject"
+                                )}
+                              </button>
                             </div>
                           )}
                         </div>
@@ -187,7 +244,6 @@ const AdminDashboard = () => {
                   })}
                 </div>
 
-                {/* Pagination Controls */}
                 <div className="pagination-controls">
                   <button
                     onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
@@ -199,10 +255,10 @@ const AdminDashboard = () => {
                   <button
                     onClick={() =>
                       setCurrentPage(prev =>
-                        indexOfLast < appointments.length ? prev + 1 : prev
+                        indexOfLast < filteredAppointments.length ? prev + 1 : prev
                       )
                     }
-                    disabled={indexOfLast >= appointments.length}
+                    disabled={indexOfLast >= filteredAppointments.length}
                   >
                     Next ➡
                   </button>
@@ -227,9 +283,7 @@ const AdminDashboard = () => {
             <div className="modal-buttons">
               <button onClick={handleLogout} disabled={loggingOut}>
                 {loggingOut ? (
-                  <>
-                    Logging out... <span className="logout-spinner"></span>
-                  </>
+                  <>Logging out... <span className="logout-spinner"></span></>
                 ) : "Yes"}
               </button>
               <button onClick={() => setShowLogoutModal(false)} disabled={loggingOut}>No</button>

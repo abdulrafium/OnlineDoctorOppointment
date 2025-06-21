@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const PatientDetails = require("../models/PatientDetails");
 
-// 🔸 POST: Save or Update Patient Details
+// POST: Save or Update Patient Details
 router.post("/save-details", async (req, res) => {
   const { userId, cnic, mobile, gender, fatherName, city, address } = req.body;
 
@@ -11,10 +11,10 @@ router.post("/save-details", async (req, res) => {
   }
 
   try {
-    // ✅ Check if this user already has details
+    // Check if this user already has details
     const existing = await PatientDetails.findOne({ userId });
 
-    // ✅ If updating existing details
+    // If updating existing details
     if (existing) {
       // Check if CNIC or mobile is already used by another user
       const cnicExists = await PatientDetails.findOne({ cnic, userId: { $ne: userId } });
@@ -41,7 +41,7 @@ router.post("/save-details", async (req, res) => {
       }
     }
 
-    // ✅ If creating new details
+    // If creating new details
     // Check if CNIC or mobile already exists globally
     const cnicExists = await PatientDetails.findOne({ cnic });
     const mobileExists = await PatientDetails.findOne({ mobile });
@@ -68,7 +68,7 @@ router.post("/save-details", async (req, res) => {
     res.status(200).json({ msg: "Details saved successfully" });
 
   } catch (err) {
-    console.error("❌ Error in saving/updating patient details:", err);
+    console.error("Error in saving/updating patient details:", err);
     res.status(500).json({ msg: "Server error", error: err.message });
   }
 });
@@ -82,7 +82,7 @@ router.get("/get-details/:userId", async (req, res) => {
     }
     res.status(200).json({ success: true, details });
   } catch (err) {
-    console.error("❌ Error in fetching patient details:", err);
+    console.error("Error in fetching patient details:", err);
     res.status(500).json({ success: false, msg: "Error fetching details", error: err.message });
   }
 });

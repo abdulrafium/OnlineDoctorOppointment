@@ -9,6 +9,7 @@ const appointmentSchema = new mongoose.Schema({
   patientMobile: String,
   patientCity: String,
   patientAddress: String,
+  patientEmail: String,
 
   doctorUserId: String,
   doctorFirstName: String,
@@ -19,7 +20,7 @@ const appointmentSchema = new mongoose.Schema({
   doctorHospital: String,
 
   date: {
-    type: String, // or Date if you're sending actual date object
+    type: String, 
     required: true
   },
 

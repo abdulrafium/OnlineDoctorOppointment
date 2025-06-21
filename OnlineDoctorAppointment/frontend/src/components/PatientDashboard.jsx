@@ -1,6 +1,4 @@
-// Full Updated PatientDashboard.jsx with Doctor and Appointment Pagination
-
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PatientProfile from './PatientProfile';
 import ChangePassword from './ChangePassword';
@@ -19,21 +17,22 @@ const PatientDashboard = () => {
   const [popup, setPopup] = useState(null);
   const [loadingAppointment, setLoadingAppointment] = useState(false);
   const [appointments, setAppointments] = useState([]);
+  const [filteredAppointments, setFilteredAppointments] = useState([]);
   const [appointmentDate, setAppointmentDate] = useState('');
+  const [filterDate, setFilterDate] = useState('');
+  const initialLoadRef = useRef(true);
 
-  // Doctor Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const doctorsPerPage = 3;
   const indexOfLastDoctor = currentPage * doctorsPerPage;
   const indexOfFirstDoctor = indexOfLastDoctor - doctorsPerPage;
   const currentDoctors = doctors.slice(indexOfFirstDoctor, indexOfLastDoctor);
 
-  // Appointment Pagination
   const [appointmentPage, setAppointmentPage] = useState(1);
   const appointmentsPerPage = 6;
   const indexOfLastAppointment = appointmentPage * appointmentsPerPage;
   const indexOfFirstAppointment = indexOfLastAppointment - appointmentsPerPage;
-  const currentAppointments = appointments.slice(indexOfFirstAppointment, indexOfLastAppointment);
+  const currentAppointments = filteredAppointments.slice(indexOfFirstAppointment, indexOfLastAppointment);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -78,16 +77,36 @@ const PatientDashboard = () => {
           body: JSON.stringify({ patientUserId: user._id }),
         });
         const data = await res.json();
-        if (data.success) setAppointments(data.appointments || []);
+        if (data.success) {
+          const appts = data.appointments || [];
+          setAppointments(appts);
+
+          if (initialLoadRef.current) {
+            const todayStr = new Date().toDateString();
+            const todayAppointments = appts.filter(
+              (appt) => new Date(appt.date).toDateString() === todayStr
+            );
+            setFilteredAppointments(todayAppointments);
+            initialLoadRef.current = false;
+          } else {
+            if (filterDate) {
+              const filtered = appts.filter(
+                (appt) => new Date(appt.date).toDateString() === new Date(filterDate).toDateString()
+              );
+              setFilteredAppointments(filtered);
+            }
+          }
+        }
       } catch (err) {
         console.error("Error fetching appointments:", err);
       }
     };
 
-    intervalId = setInterval(fetchAppointments, 5000);
     fetchAppointments();
+    intervalId = setInterval(fetchAppointments, 5000);
+
     return () => clearInterval(intervalId);
-  }, [user._id]);
+  }, [user._id, filterDate]);
 
   const handleLogout = () => {
     setLoggingOut(true);
@@ -99,21 +118,27 @@ const PatientDashboard = () => {
   };
 
   const handleMakeAppointment = (doctorId) => {
-    const alreadyBooked = appointments.some(
-      (appt) => appt.doctorUserId === doctorId
-    );
-    if (alreadyBooked) {
-      setPopup({ type: "error", message: "You already booked this doctor." });
-      setTimeout(() => setPopup(null), 3000);
-    } else {
-      setSelectedDoctorId(doctorId);
-      setAppointmentDate('');
-      setShowConfirmModal(true);
-    }
+    setSelectedDoctorId(doctorId);
+    setAppointmentDate('');
+    setShowConfirmModal(true);
   };
 
   const confirmAppointment = async () => {
     if (!appointmentDate) return;
+
+    const alreadyBookedSameDate = appointments.some(
+      (appt) =>
+        appt.doctorUserId === selectedDoctorId &&
+        new Date(appt.date).toDateString() === new Date(appointmentDate).toDateString()
+    );
+
+    if (alreadyBookedSameDate) {
+      setPopup({ type: "error", message: "Already booked this doctor on this date." });
+      setTimeout(() => setPopup(null), 3000);
+      setShowConfirmModal(false);
+      return;
+    }
+
     setLoadingAppointment(true);
     try {
       const res = await fetch("http://localhost:5000/api/book-appointment", {
@@ -127,22 +152,21 @@ const PatientDashboard = () => {
       });
       const data = await res.json();
       if (data.success) {
-        setPopup({ type: "success", message: "✅ Appointment booked!" });
-        setAppointments((prev) => [
-          ...prev,
-          {
-            patientUserId: user._id,
-            doctorUserId: selectedDoctorId,
-            date: appointmentDate,
-            status: 'pending'
-          }
-        ]);
+        setPopup({ type: "success", message: "Appointment booked!" });
+        const newAppt = {
+          patientUserId: user._id,
+          doctorUserId: selectedDoctorId,
+          date: appointmentDate,
+          status: 'Pending'
+        };
+        setAppointments((prev) => [...prev, newAppt]);
+        setFilteredAppointments((prev) => [...prev, newAppt]);
       } else {
-        setPopup({ type: "error", message: "❌ Failed: " + data.msg });
+        setPopup({ type: "error", message: "Failed: " + data.msg });
       }
     } catch (err) {
-      console.error("❌ Booking error:", err);
-      setPopup({ type: "error", message: "❌ Something went wrong." });
+      console.error("Booking error:", err);
+      setPopup({ type: "error", message: "Something went wrong." });
     } finally {
       setLoadingAppointment(false);
       setShowConfirmModal(false);
@@ -150,6 +174,27 @@ const PatientDashboard = () => {
       setAppointmentDate('');
       setTimeout(() => setPopup(null), 3000);
     }
+  };
+
+  const handleFilterDateChange = (e) => {
+    const selectedDate = e.target.value;
+    setFilterDate(selectedDate);
+    if (!selectedDate) {
+      setFilteredAppointments(appointments);
+      return;
+    }
+
+    const filtered = appointments.filter((appt) =>
+      new Date(appt.date).toDateString() === new Date(selectedDate).toDateString()
+    );
+    setFilteredAppointments(filtered);
+    setAppointmentPage(1);
+  };
+
+  const clearFilter = () => {
+    setFilterDate('');
+    setFilteredAppointments(appointments);
+    setAppointmentPage(1);
   };
 
   return (
@@ -162,7 +207,6 @@ const PatientDashboard = () => {
         <ul className="nav-links">
           <li className={activeTab === 'dashboard' ? 'active' : ''} onClick={() => setActiveTab('dashboard')}>🏠 Dashboard</li>
           <li className={activeTab === 'appointments' ? 'active' : ''} onClick={() => setActiveTab('appointments')}>📅 Appointments</li>
-          {/* <li className={activeTab === 'payments' ? 'active' : ''} onClick={() => setActiveTab('payments')}>💳 Payments</li> */}
           <li className={activeTab === 'profile' ? 'active' : ''} onClick={() => setActiveTab('profile')}>👤 Profile</li>
           <li className={activeTab === 'changePassword' ? 'active' : ''} onClick={() => setActiveTab('changePassword')}>🔐 Change Password</li>
           <li className="logout" onClick={() => setShowLogoutModal(true)}>🚪 Logout</li>
@@ -201,8 +245,17 @@ const PatientDashboard = () => {
         {activeTab === 'appointments' && (
           <div className="appointments-tab">
             <h2>📅 Your Appointments</h2>
-            {appointments.length === 0 ? (
-              <p>You haven't booked any appointments yet.</p>
+            <div className="appointment-filter-bar">
+              <input
+                type="date"
+                value={filterDate}
+                onChange={handleFilterDateChange}
+              />
+              <button onClick={clearFilter} className="show-all-btn">Show All</button>
+            </div>
+
+            {filteredAppointments.length === 0 ? (
+              <p>No appointments found.</p>
             ) : (
               <>
                 <div className="appointments-list">
@@ -233,14 +286,13 @@ const PatientDashboard = () => {
                 <div className="pagination-controls">
                   <button onClick={() => setAppointmentPage((prev) => Math.max(prev - 1, 1))} disabled={appointmentPage === 1}>⬅ Previous</button>
                   <span>Page {appointmentPage}</span>
-                  <button onClick={() => setAppointmentPage((prev) => indexOfLastAppointment < appointments.length ? prev + 1 : prev)} disabled={indexOfLastAppointment >= appointments.length}>Next ➡</button>
+                  <button onClick={() => setAppointmentPage((prev) => indexOfLastAppointment < filteredAppointments.length ? prev + 1 : prev)} disabled={indexOfLastAppointment >= filteredAppointments.length}>Next ➡</button>
                 </div>
               </>
             )}
           </div>
         )}
 
-        {/* {activeTab === 'payments' && <h2>Payments section coming soon...</h2>} */}
         {activeTab === 'profile' && <PatientProfile userId={user._id} />}
         {activeTab === 'changePassword' && <ChangePassword userId={user._id} />}
       </main>
@@ -250,7 +302,9 @@ const PatientDashboard = () => {
           <div className="modal-content">
             <h3>Are you sure you want to logout?</h3>
             <div className="modal-buttons">
-              <button onClick={handleLogout} disabled={loggingOut}>{loggingOut ? <>Logging out... <span className="logout-spinner"></span></> : "Yes"}</button>
+              <button onClick={handleLogout} disabled={loggingOut}>
+                {loggingOut ? <>Logging out... <span className="logout-spinner"></span></> : "Yes"}
+              </button>
               <button onClick={() => setShowLogoutModal(false)} disabled={loggingOut}>No</button>
             </div>
           </div>
@@ -261,9 +315,16 @@ const PatientDashboard = () => {
         <div className="modal-overlay">
           <div className="modal-content">
             <h3>Select Appointment Date</h3>
-            <input type="date" value={appointmentDate} onChange={(e) => setAppointmentDate(e.target.value)} min={new Date().toISOString().split("T")[0]} />
+            <input
+              type="date"
+              value={appointmentDate}
+              onChange={(e) => setAppointmentDate(e.target.value)}
+              min={new Date().toISOString().split("T")[0]}
+            />
             <div className="modal-buttons">
-              <button onClick={confirmAppointment} disabled={loadingAppointment || !appointmentDate}>{loadingAppointment ? <>Booking... <span className="spinner"></span></> : "Confirm"}</button>
+              <button onClick={confirmAppointment} disabled={loadingAppointment || !appointmentDate}>
+                {loadingAppointment ? <>Booking... <span className="spinner"></span></> : "Confirm"}
+              </button>
               <button onClick={() => setShowConfirmModal(false)} disabled={loadingAppointment}>Cancel</button>
             </div>
           </div>
