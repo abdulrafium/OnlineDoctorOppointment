@@ -60,3 +60,25 @@ This phase focuses on core appointment management, availability scheduling, and 
 - Popup alerts and feedback with auto-close animations
 
 ---
+
+
+
+## 🚀 Getting Started
+
+Follow the steps below to run the project locally:
+
+1. **Clone the repository**  
+   ```bash
+   git clone https://github.com/abdulrafium/OnlineDoctorOppointment.git
+
+2. **Start the backend server**  
+   ```bash
+   cd OnlineDoctorAppointment
+   cd backend
+   nodemon server.js
+
+3. **Start the frontent server**  
+   ```bash
+   cd OnlineDoctorAppointment
+   cd frontend
+   npm run dev
