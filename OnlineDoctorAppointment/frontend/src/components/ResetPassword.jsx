@@ -36,7 +36,29 @@ export default function ResetPassword() {
 
     setLoading(true);
 
-    //Backend logic to reset password
+    try {
+      const res = await fetch("http://localhost:5000/api/reset-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token, password })
+      });
+
+      const data = await res.json();
+      setType(res.ok ? "success" : "error");
+      setMessage(data.msg || "Something went wrong");
+      setShowPopup(true);
+
+      if (res.ok) {
+        setPassword("");
+        setConfirmPassword("");
+      }
+    } catch (err) {
+      setType("error");
+      setMessage("Server error");
+      setShowPopup(true);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {

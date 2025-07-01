@@ -15,8 +15,24 @@ export default function ForgotPassword() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-   
-    //backend logic here to send reset link
+    try {
+      const res = await fetch("http://localhost:5000/api/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email })
+      });
+      const data = await res.json();
+
+      if (res.ok) {
+        showPopup({ message: data.msg || "Email sent.", type: "success" });
+      } else {
+        showPopup({ message: data.msg || "Failed to send reset link.", type: "error" });
+      }
+    } catch (err) {
+      showPopup({ message: "Something went wrong.", type: "error" });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

@@ -10,9 +10,7 @@ const userRoutes = require("./routes/userRoutes");
 const patientDetailsRoutes = require("./routes/patientDetailsRoutes");
 const doctorDetailsRoutes = require("./routes/doctorDetailsRoutes");
 const appointmentRoutes = require("./routes/appointments");
-
-
-
+const authRoutes = require("./routes/resetPassword");
 
 
 dotenv.config();
@@ -109,6 +107,7 @@ app.use("/api", userRoutes);
 app.use("/api", patientDetailsRoutes);
 app.use("/api", doctorDetailsRoutes);
 app.use("/api", appointmentRoutes);
+app.use("/api", authRoutes);
 
 // Start Server
 const PORT = process.env.PORT || 5000;
