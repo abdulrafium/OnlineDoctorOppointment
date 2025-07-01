@@ -78,6 +78,12 @@ export function PatientLogin({ role }) {
           className="patient-login-input"
         />
 
+        <p>
+          <Link to="/forgot-password" style={{ color: "#4fadad" }}>
+            Forgot Password?
+          </Link>
+        </p>
+
         <button type="submit" className="patient-login-button" disabled={loading}>
           {loading ? (
             <>
