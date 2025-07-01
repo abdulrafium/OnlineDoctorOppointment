@@ -22,7 +22,7 @@ This is **Phase 1** of the Online Doctor Appointment project, which includes rol
 - **Frontend:** React (Vite), TailwindCSS
 - **Backend:** Node.js, Express.js
 - **Database:** MongoDB Atlas (Cloud-based)
-- **Others:** bcryptjs, JWT (optional for future phases), dotenv, cors
+- **Others:** bcryptjs, JWT, dotenv, cors
 
 ---
 
@@ -61,6 +61,26 @@ This phase focuses on core appointment management, availability scheduling, and 
 
 ---
 
+## Updated Phase 2
+
+### Forgot/Reset Password Feature
+- Added **Forgot Password** and **Reset Password** functionality.
+- Users can request a password reset by email.
+- A **secure token** (valid for 15 minutes) is sent via email.
+- Users can click the email link to set a **new password** securely.
+- Includes password validation and confirmation fields in the UI.
+
+### Email Notifications for Appointment Status
+- Implemented **automated email notifications** for appointment **confirmation** and **rejection**.
+- Patients are notified when the admin updates the status of their appointment.
+- Email includes:
+  - Doctor name and hospital
+  - Appointment date and time (formatted)
+  - Confirmation or rejection message
+- Emails are styled professionally and sent via **Nodemailer using Gmail SMTP**.
+
+> These features were finalized and implemented **after completing the main Phase 2**, to enhance security and communication.
+
 
 
 ## 🚀 Getting Started
@@ -81,4 +101,27 @@ Follow the steps below to run the project locally:
    ```bash
    cd OnlineDoctorAppointment
    cd frontend
+   npm install
    npm run dev
+
+---
+
+## 👤 Role Credentials & Access Instructions
+
+### 🔹 Patient
+- Create a new account using a **valid and active email address**.
+- Complete your profile to enable appointment booking.
+
+### 🔹 Doctor
+- Use the following predefined login credentials:
+  - **Email:** `doctor1@gmail.com`
+  - **Password:** `12345`
+- Additional sample doctor accounts:
+  - `doctor2@gmail.com`, `doctor3@gmail.com`, `doctor4@gmail.com`
+  - **Password:** `12345` for all
+
+### 🔹 Admin
+- Use the following credentials to access the admin dashboard:
+  - **Email:** `admin@gmail.com`
+  - **Password:** `12345`
+
