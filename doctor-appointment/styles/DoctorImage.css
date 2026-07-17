@@ -1,0 +1,27 @@
+/* 🔹 Doctor Image Styles */
+.doctor-picture-container {
+  text-align: left; /* Align left for laptop */
+  margin-left: 40px; /* 🔹 Adds space from the left */
+}
+
+/* Default doctor image for laptops/desktops */
+.doctor-picture {
+  max-width: 500px;
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 20px 0; /* Top and bottom spacing */
+}
+
+/* 🔹 Mobile View Centering */
+@media (max-width: 768px) {
+  .doctor-picture-container {
+    text-align: center !important;
+    margin-left: 0 !important;
+  }
+
+  .doctor-picture {
+    max-width: 90% !important;
+    margin: 10px auto !important;
+  }
+}

@@ -1,0 +1,20 @@
+.doctor-image-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.doctor-image {
+  width: 80%;
+  height: auto;
+  max-width: 400px;
+}
+
+/* Media query for mobile (max-width: 600px) */
+@media (max-width: 600px) {
+  .doctor-image {
+    width: 90%;
+    max-width: 300px;
+  }
+}
